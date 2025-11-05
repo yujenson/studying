@@ -1,70 +1,104 @@
 # Studying
 
-Spring Boot 3.5.7 web project that demonstrates integrating MyBatis-Plus with MySQL, Redisson, and an OSS service based on the AWS S3 protocol.
+A modular Spring Boot 3.5.7 project (Java 17) that demonstrates how to assemble an enterprise-ready stack with MyBatis-Plus, Redisson, and an OSS service compatible with the AWS S3 protocol. The project is organised into multiple Maven modules to separate concerns between shared infrastructure, business modules, and the administration web application.
 
-## Tech Stack
+## Project Structure
 
-- Java 17
-- Spring Boot 3.5.7
-- MyBatis-Plus 3.5.14
-- MySQL 5.7/8.0
-- Redisson 3.51.0
-- AWS S3 compatible object storage (MinIO, Alibaba Cloud OSS, etc.)
+```
+studying
+├─ studying-admin                         # Administration web module (port 8080)
+│  ├─ src/main/java/com/jenson/studying    # StudyingApplication & servlet initializer
+│  ├─ src/main/resources                   # Application configuration & i18n assets
+│  │  ├─ application.yml                   # Root configuration (activates dev profile by default)
+│  │  ├─ application-dev.yml               # Development profile configuration
+│  │  ├─ application-prod.yml              # Production profile configuration
+│  │  ├─ i18n/messages.properties          # Message bundle for i18n
+│  │  └─ logback.xml                       # Logging configuration
+├─ studying-common                        # Shared infrastructure modules
+│  ├─ studying-common-bom                  # Dependency version management (BOM)
+│  ├─ studying-common-core                 # Core constants and utilities
+│  ├─ studying-common-doc                  # API/Documentation related features
+│  ├─ studying-common-json                 # JSON serialization helpers
+│  ├─ studying-common-log                  # Logging support
+│  ├─ studying-common-mybatis              # MyBatis-Plus configuration
+│  ├─ studying-common-oss                  # OSS (AWS S3 compatible) integration
+│  ├─ studying-common-redis                # Redisson configuration
+│  ├─ studying-common-security             # Security features
+│  ├─ studying-common-sensitive            # Data desensitisation helpers
+│  └─ studying-common-web                  # Web layer common configuration
+├─ studying-modules                       # Business feature modules
+│  ├─ studying-demo                        # Demo domain entities and mappers
+│  └─ studying-system                      # System business module placeholder
+├─ script                                 # Operational scripts
+│  ├─ bin/.gitkeep
+│  ├─ docker/.gitkeep
+│  └─ sql/.gitkeep
+├─ .editorconfig                          # Editor configuration
+├─ pom.xml                                # Root Maven aggregator
+└─ README.md                              # Project documentation
+```
+
+## Module Highlights
+
+- **studying-common-bom**: Central place for dependency version alignment (MyBatis-Plus 3.5.14, Redisson 3.51.0, AWS SDK 2.25.47, MySQL connector 8.4.0).
+- **studying-common-mybatis**: Provides the `MybatisPlusInterceptor` bean with MySQL pagination support.
+- **studying-common-redis**: Supplies configurable Redisson integration via `redisson.*` properties.
+- **studying-common-oss**: Auto-configures an `S3Client` and exposes an `OssService` for generating object URLs.
+- **studying-demo**: Contains a sample `User` entity and `UserMapper` built with MyBatis-Plus for demonstration purposes.
+- **studying-admin**: Hosts the primary Spring Boot application, REST endpoints (e.g., `/api/health`), profile-aware configuration files, and logging setup.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 17 and Maven 3.9+
-- MySQL 5.7/8.0 instance
-- (Optional) Redis instance when enabling Redisson
-- (Optional) S3 compatible OSS endpoint
+- JDK 17
+- Maven 3.9+
+- MySQL 5.7/8.0 instance (update credentials in the profile configuration)
+- Optional: Redis instance for Redisson, S3-compatible OSS endpoint (e.g., MinIO)
 
-### Configure the Application
-
-Application configuration lives in `src/main/resources/application.yml`.
-
-Key sections to review:
-
-- `spring.datasource`: Update with your MySQL connection information.
-- `redisson`: Set `enabled: true` and update connection details if you want Redisson enabled.
-- `oss`: Configure endpoint, region, and credentials for your S3-compatible storage service.
-
-### Run Locally
+### Build the Entire Project
 
 ```bash
+mvn clean install
+```
+
+### Run the Admin Application (Development Profile)
+
+```bash
+cd studying-admin
 mvn spring-boot:run
 ```
 
-or build a runnable jar:
+The application listens on **http://localhost:8080** and exposes:
+
+- `GET /api/health` – Health probe
+- `GET /api/oss/sample-url?objectKey=<key>` – Generates a sample OSS object URL using the configured settings
+
+### Packaging
+
+Create an executable jar from the admin module:
 
 ```bash
+cd studying-admin
 mvn clean package
-java -jar target/studying-0.0.1-SNAPSHOT.jar
+java -jar target/studying-admin-0.0.1-SNAPSHOT.jar
 ```
 
-## API Endpoints
+### Profiles & Configuration
 
-- `GET /api/health` - Simple health check.
-- `GET /api/oss/sample-url?objectKey=<key>` - Builds an object URL using the configured OSS settings.
+- `application.yml` activates the `dev` profile by default and sets the message bundle as well as management endpoint exposure.
+- `application-dev.yml` contains local datasource, MyBatis-Plus, Redisson, and OSS defaults.
+- `application-prod.yml` provides production-oriented placeholders that can be overridden via environment variables.
+- Logging is managed through `logback.xml`, which writes both to the console and rolling log files under `logs/`.
 
-## Project Structure
+## Internationalisation
 
-```
-src/
-├── main
-│   ├── java/com/jenson/studying
-│   │   ├── StudyingApplication.java
-│   │   ├── config/...
-│   │   ├── controller/...
-│   │   ├── mapper/...
-│   │   └── service/...
-│   └── resources
-│       └── application.yml
-└── test/java/com/jenson/studying
-```
+Message bundles live under `src/main/resources/i18n`. The default locale is Simplified Chinese (`zh_CN`), but you can switch locales using HTTP request headers (`Accept-Language`).
 
-## Additional Notes
+## Scripts
 
-- The default configuration disables Redisson to prevent connection attempts when Redis is unavailable. Enable it by setting `redisson.enabled` to `true` and providing connection properties.
-- The project ships with basic MyBatis-Plus setup and a sample mapper/entity that can be expanded as needed.
+Utility scripts, Docker assets, and SQL files should be placed inside the `script` directory tree (`bin`, `docker`, `sql`). Placeholder `.gitkeep` files are present to keep the folders under version control.
+
+## Testing
+
+A basic context-loading test (`StudyingApplicationTests`) ensures the Spring context starts successfully. Add per-module tests as needed to cover business logic.
