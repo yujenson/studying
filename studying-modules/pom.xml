@@ -15,7 +15,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>studying-demo</module>
         <module>studying-system</module>
     </modules>
 

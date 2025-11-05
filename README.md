@@ -1,82 +1,85 @@
 # Studying
 
-A modular Spring Boot 3.5.7 project (Java 17) that demonstrates how to assemble an enterprise-ready stack with MyBatis-Plus, Redisson, and an OSS service compatible with the AWS S3 protocol. The project is organised into multiple Maven modules to separate concerns between shared infrastructure, business modules, and the administration web application.
+基于 Spring Boot 3.5.7（JDK 17）搭建的模块化脚手架，参考了 [RuoYi-Vue-Plus](https://github.com/dromara/RuoYi-Vue-Plus) 的工程结构与编码风格，集成了 MyBatis-Plus、Redisson 以及兼容 AWS S3 协议的对象存储能力。
 
-## Project Structure
+## 项目结构
 
 ```
 studying
-├─ studying-admin                         # Administration web module (port 8080)
-│  ├─ src/main/java/com/jenson/studying    # StudyingApplication & servlet initializer
-│  ├─ src/main/resources                   # Application configuration & i18n assets
-│  │  ├─ application.yml                   # Root configuration (activates dev profile by default)
-│  │  ├─ application-dev.yml               # Development profile configuration
-│  │  ├─ application-prod.yml              # Production profile configuration
-│  │  ├─ i18n/messages.properties          # Message bundle for i18n
-│  │  └─ logback.xml                       # Logging configuration
-├─ studying-common                        # Shared infrastructure modules
-│  ├─ studying-common-bom                  # Dependency version management (BOM)
-│  ├─ studying-common-core                 # Core constants and utilities
-│  ├─ studying-common-doc                  # API/Documentation related features
-│  ├─ studying-common-json                 # JSON serialization helpers
-│  ├─ studying-common-log                  # Logging support
-│  ├─ studying-common-mybatis              # MyBatis-Plus configuration
-│  ├─ studying-common-oss                  # OSS (AWS S3 compatible) integration
-│  ├─ studying-common-redis                # Redisson configuration
-│  ├─ studying-common-security             # Security features
-│  ├─ studying-common-sensitive            # Data desensitisation helpers
-│  └─ studying-common-web                  # Web layer common configuration
-├─ studying-modules                       # Business feature modules
-│  ├─ studying-demo                        # Demo domain entities and mappers
-│  └─ studying-system                      # System business module placeholder
-├─ script                                 # Operational scripts
+├─ studying-admin                         # 后台管理端（端口 8080）
+│  ├─ src/main/java/com/jenson/studying    # 启动入口、Servlet 初始化
+│  ├─ src/main/java/com/jenson/studying/web
+│  │  └─ controller/monitor/HealthController.java
+│  └─ src/main/resources                   # 配置文件 & 国际化
+│     ├─ application.yml                   # 总配置（默认启用 dev）
+│     ├─ application-dev.yml               # 开发环境配置
+│     ├─ application-prod.yml              # 生产环境配置
+│     ├─ i18n/messages.properties          # 国际化资源
+│     └─ logback.xml                       # 日志配置
+├─ studying-framework                     # 框架层，聚合通用能力
+│  └─ pom.xml                              # 引入 common 模块
+├─ studying-common                        # 公共组件层
+│  ├─ studying-common-bom                  # 依赖版本管理 BOM
+│  ├─ studying-common-core                 # 核心常量、基础响应（AjaxResult 等）
+│  ├─ studying-common-datasource           # 数据源 & MyBatis-Plus 配置
+│  ├─ studying-common-log                  # 日志扩展
+│  ├─ studying-common-oss                  # OSS 客户端封装（S3 协议）
+│  ├─ studying-common-redis                # Redisson 自动配置
+│  ├─ studying-common-security             # 安全模块预留
+│  ├─ studying-common-sensitive            # 数据脱敏模块预留
+│  ├─ studying-common-web                  # Web 层通用配置（LocaleResolver 等）
+│  └─ ...                                  # 其他 common 子模块占位
+├─ studying-modules                       # 业务模块层
+│  └─ studying-system                      # 系统核心模块（示例用户表）
+├─ script                                 # 脚本、Docker、SQL 占位
 │  ├─ bin/.gitkeep
 │  ├─ docker/.gitkeep
 │  └─ sql/.gitkeep
-├─ .editorconfig                          # Editor configuration
-├─ pom.xml                                # Root Maven aggregator
-└─ README.md                              # Project documentation
+├─ .editorconfig                          # 编辑器统一规范
+├─ pom.xml                                # 根 POM，聚合所有模块
+└─ README.md                              # 项目说明
 ```
 
-## Module Highlights
+## 模块亮点
 
-- **studying-common-bom**: Central place for dependency version alignment (MyBatis-Plus 3.5.14, Redisson 3.51.0, AWS SDK 2.25.47, MySQL connector 8.4.0).
-- **studying-common-mybatis**: Provides the `MybatisPlusInterceptor` bean with MySQL pagination support.
-- **studying-common-redis**: Supplies configurable Redisson integration via `redisson.*` properties.
-- **studying-common-oss**: Auto-configures an `S3Client` and exposes an `OssService` for generating object URLs.
-- **studying-demo**: Contains a sample `User` entity and `UserMapper` built with MyBatis-Plus for demonstration purposes.
-- **studying-admin**: Hosts the primary Spring Boot application, REST endpoints (e.g., `/api/health`), profile-aware configuration files, and logging setup.
+- **studying-common-bom**：统一管理三方依赖版本（MyBatis-Plus 3.5.14、Redisson 3.51.0、AWS SDK 2.25.47、MySQL 驱动 8.4.0 等）。
+- **studying-common-core**：提供 `AjaxResult`、`BaseController`、`HttpStatus` 等基础设施，便于统一返回风格。
+- **studying-common-datasource**：自动装配 MyBatis-Plus 插件（含 MySQL 分页拦截器）。
+- **studying-common-redis**：基于 `redisson.*` 配置项自动创建 `RedissonClient`，默认关闭，可按需打开。
+- **studying-common-oss**：封装 AWS SDK S3 客户端，提供 `OssService` 生成对象访问地址。
+- **studying-framework**：聚合常用 common 依赖，对上层模块只暴露一个依赖入口。
+- **studying-system**：示例系统模块，内含 `SysUser` 实体及 `SysUserMapper`。
+- **studying-admin**：入口应用，采用 RuoYi 风格的分层结构与响应规范。
 
-## Getting Started
+## 本地运行
 
-### Prerequisites
+### 环境要求
 
 - JDK 17
 - Maven 3.9+
-- MySQL 5.7/8.0 instance (update credentials in the profile configuration)
-- Optional: Redis instance for Redisson, S3-compatible OSS endpoint (e.g., MinIO)
+- MySQL 5.7/8.0（更新 `application-*.yml` 中的连接信息）
+- 可选：Redis（启用 Redisson 时）
+- 可选：兼容 S3 协议的对象存储（如 MinIO）
 
-### Build the Entire Project
+### 构建全量模块
 
 ```bash
 mvn clean install
 ```
 
-### Run the Admin Application (Development Profile)
+### 启动后台管理（默认 dev 配置）
 
 ```bash
 cd studying-admin
 mvn spring-boot:run
 ```
 
-The application listens on **http://localhost:8080** and exposes:
+应用启动后监听 **http://localhost:8080**，示例接口：
 
-- `GET /api/health` – Health probe
-- `GET /api/oss/sample-url?objectKey=<key>` – Generates a sample OSS object URL using the configured settings
+- `GET /monitor/health` —— 返回健康状态、时间戳
+- `GET /monitor/health/oss-url?objectKey=<key>` —— 生成示例对象访问地址（返回 `AjaxResult`）
 
-### Packaging
-
-Create an executable jar from the admin module:
+### 打包运行
 
 ```bash
 cd studying-admin
@@ -84,21 +87,21 @@ mvn clean package
 java -jar target/studying-admin-0.0.1-SNAPSHOT.jar
 ```
 
-### Profiles & Configuration
+## 配置说明
 
-- `application.yml` activates the `dev` profile by default and sets the message bundle as well as management endpoint exposure.
-- `application-dev.yml` contains local datasource, MyBatis-Plus, Redisson, and OSS defaults.
-- `application-prod.yml` provides production-oriented placeholders that can be overridden via environment variables.
-- Logging is managed through `logback.xml`, which writes both to the console and rolling log files under `logs/`.
+- `application.yml`：启用指定 Profile、设置消息国际化、暴露健康检查端点。
+- `application-dev.yml`：MySQL、Redis、OSS 默认开发配置（Redisson 默认关闭）。
+- `application-prod.yml`：生产环境占位配置，支持通过环境变量覆盖凭证。
+- `logback.xml`：定义控制台与滚动文件日志输出。
 
-## Internationalisation
+## 编码规范
 
-Message bundles live under `src/main/resources/i18n`. The default locale is Simplified Chinese (`zh_CN`), but you can switch locales using HTTP request headers (`Accept-Language`).
+- 所有返回类统一使用 `AjaxResult`，控制器可继承 `BaseController` 获得 `success/error` 快捷方法。
+- MyBatis-Plus 默认开启驼峰映射，实体类示例遵循 `Sys` 前缀命名。
+- 国际化资源位于 `src/main/resources/i18n`，默认语种为简体中文，可通过 `Accept-Language` 切换。
 
-## Scripts
+## 后续扩展
 
-Utility scripts, Docker assets, and SQL files should be placed inside the `script` directory tree (`bin`, `docker`, `sql`). Placeholder `.gitkeep` files are present to keep the folders under version control.
-
-## Testing
-
-A basic context-loading test (`StudyingApplicationTests`) ensures the Spring context starts successfully. Add per-module tests as needed to cover business logic.
+- 在 `studying-common` 目录下补充更多公共能力（如缓存、消息队列、监控告警等）。
+- 在 `studying-modules` 中拆分业务子系统，结合 `studying-framework` 快速装配到 `studying-admin`。
+- 若需要进一步贴合 RuoYi-Vue-Plus，可在此基础上补充权限体系、租户、审计日志等高级特性。

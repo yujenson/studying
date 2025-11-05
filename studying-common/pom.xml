@@ -20,7 +20,7 @@
         <module>studying-common-doc</module>
         <module>studying-common-json</module>
         <module>studying-common-log</module>
-        <module>studying-common-mybatis</module>
+        <module>studying-common-datasource</module>
         <module>studying-common-oss</module>
         <module>studying-common-redis</module>
         <module>studying-common-security</module>

@@ -1,7 +1,7 @@
 package com.jenson.studying.common.doc;
 
 /**
- * Marker class for the documentation support module.
+ * Marker class for documentation related configuration.
  */
 public final class DocModuleMarker {
 

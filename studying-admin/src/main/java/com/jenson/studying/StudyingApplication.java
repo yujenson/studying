@@ -4,8 +4,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-@MapperScan("com.jenson.studying.modules.demo.mapper")
+@SpringBootApplication(scanBasePackages = "com.jenson.studying")
+@MapperScan({"com.jenson.studying.system.mapper"})
 public class StudyingApplication {
 
     public static void main(String[] args) {

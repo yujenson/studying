@@ -26,6 +26,7 @@
 
     <modules>
         <module>studying-common</module>
+        <module>studying-framework</module>
         <module>studying-modules</module>
         <module>studying-admin</module>
     </modules>

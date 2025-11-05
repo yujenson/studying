@@ -19,6 +19,10 @@
             <groupId>com.jenson.studying</groupId>
             <artifactId>studying-common-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jenson.studying</groupId>
+            <artifactId>studying-common-datasource</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
