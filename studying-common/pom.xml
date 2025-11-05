@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.jenson.studying</groupId>
+        <artifactId>studying</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>studying-common</artifactId>
+    <name>studying-common</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>studying-common-bom</module>
+        <module>studying-common-core</module>
+        <module>studying-common-doc</module>
+        <module>studying-common-json</module>
+        <module>studying-common-log</module>
+        <module>studying-common-datasource</module>
+        <module>studying-common-oss</module>
+        <module>studying-common-redis</module>
+        <module>studying-common-security</module>
+        <module>studying-common-sensitive</module>
+        <module>studying-common-web</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.jenson.studying</groupId>
+                <artifactId>studying-common-bom</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://db-host:3306/studying?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    username: ${STUDYING_DB_USERNAME:prod_user}
+    password: ${STUDYING_DB_PASSWORD:prod_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+redisson:
+  enabled: true
+  address: ${STUDYING_REDIS_ADDRESS:redis://redis-host:6379}
+  password: ${STUDYING_REDIS_PASSWORD:}
+  database: 0
+
+oss:
+  endpoint: https://oss.example.com
+  region: ap-southeast-1
+  access-key: ${STUDYING_OSS_ACCESS_KEY}
+  secret-key: ${STUDYING_OSS_SECRET_KEY}
+  bucket: ${STUDYING_OSS_BUCKET}
+  path-style-access-enabled: false
+
+logging:
+  level:
+    root: INFO

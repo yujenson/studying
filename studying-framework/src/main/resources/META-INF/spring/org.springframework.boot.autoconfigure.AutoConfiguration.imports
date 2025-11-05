@@ -1,0 +1,4 @@
+com.jenson.studying.common.datasource.config.MybatisPlusConfig
+com.jenson.studying.common.redis.config.RedissonAutoConfiguration
+com.jenson.studying.common.oss.OssAutoConfiguration
+com.jenson.studying.common.web.config.WebAutoConfiguration
